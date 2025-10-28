@@ -26,12 +26,11 @@ const Details=()=>{
       rain:RoundRain
     }
   })
-  console.log(CombineData)
     const {weather} = useContext(WeatherContext)
     const [index,setIndex]=useState(0)
     const flatListRef=useRef(null)
     const next=()=>{
-        if(index < tempData.length-1)
+        if(index < CombineData.length-1)
         {   
             flatListRef.current.scrollToIndex({index:index+1})
             setIndex(index+1)
@@ -99,7 +98,7 @@ const Details=()=>{
               showsHorizontalScrollIndicator={false}
               data={CombineData}
               renderItem={({ item }) => (
-                <Forecast temp={item.temp} day={item.day} rain={item.rain} />
+                <Forecast temp={item.temp} day={item.day} rain={item.rain} key={item.id} />
               )}
               keyExtractor={(item)=>item.id}
             ></FlatList>

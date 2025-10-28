@@ -11,6 +11,7 @@ import Starter from "./screen/Starter";
 import Home from "./screen/Home";
 import Details from "./screen/Details";
 import {WeatherProvider} from "./screen/WeatherContext"
+import LinearGradient from "react-native-linear-gradient";
 const Stack = createNativeStackNavigator();
 const Bottom = createBottomTabNavigator();
 
@@ -24,7 +25,14 @@ const Tabs = () => {
           tabBarShowLabel: false,
           tabBarActiveTintColor: "#007bff",
           tabBarInactiveTintColor: "gray",
-          
+          tabBarBackground: () => (
+            <LinearGradient
+              colors={['#6325e7ff', '#c21cd4ff']} // customize your gradient
+              style={{ flex: 1 }}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            />
+          ),
           tabBarIcon: ({ color, size }) => {
             // ✅ use the actual icon variables (not strings)
             let icon;

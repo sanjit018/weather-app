@@ -5,12 +5,15 @@ export const WeatherProvider=({children})=>{
     const [weather,setWeather]=useState({
         temperature:null,
         description:'',
-        icon:'',
+        code:null,
         today:"",
         max:null,
         city:'',
         sunrise:'',
         sunset:'',
+        lat:'',
+        long:'',
+        uvindex:null
       })
     return(
         <WeatherContext.Provider value={{weather,setWeather}}>

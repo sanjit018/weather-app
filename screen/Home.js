@@ -3,9 +3,9 @@ import { FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-nativ
 import Background from '../component/Background'
 import LinearGradient from 'react-native-linear-gradient';
 import Temp from "../component/Temp"
-import Degree from '../component/Degree';
+import { Cloudy, Overcast, Rainy, Sunny, Thunderstorm } from "../component/Constant"
 import { WeatherContext } from './WeatherContext';
-export const tempData=[
+ const tempData=[
   {"id":1,"temp":"18","time":"15:00","day":'Mon'},
   {"id":2,"temp":"19","time":"16:00","day":'Tue'},
   {"id":3,"temp":"17","time":"17:00","day":'Wed'},
@@ -17,27 +17,33 @@ export const tempData=[
 const Home=({navigation})=>{
   const { weather, setWeather } = useContext(WeatherContext);
   useEffect(()=>{
-    const result = fetch("https://api.weatherstack.com/current?access_key=d09242fae1acd7af81840358b6ef7e8e&query=Asansol").then(response=>response.json()).then(data=>{
-      if(data && data.current)
-      {
-        const localtime = data.location.localtime;
-        const date = new Date(localtime.replace(' ', 'T'));
-        const month = date.toLocaleString('en-US', { month: 'short' });
-        const day = date.getDate();
-        const currentData=`${month}, ${day}`
-        setWeather({
-          temperature: data.current.temperature,
-          description: data.current.weather_descriptions[0],
-          icon: data.current.weather_icons[0],
-          max: data.current.feelslike,
-          today:currentData,
-          city:data.location.name,
-          sunrise:data.current.astro.sunrise,
-          sunset:data.current.astro.sunset
-        });
-      }
-    })
-  },[])
+    const result = fetch(
+      'https://api.weatherstack.com/current?access_key=d09242fae1acd7af81840358b6ef7e8e&query=Asansol')
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.current) {
+          const localtime = data.location.localtime;
+          const date = new Date(localtime.replace(' ', 'T'));
+          const month = date.toLocaleString('en-US', { month: 'short' });
+          const day = date.getDate();
+          const currentData = `${month}, ${day}`;
+          setWeather({
+            temperature: data.current.temperature,
+            description: data.current.weather_descriptions[0],
+            code: data.current.weather_code,
+            max: data.current.feelslike,
+            today: currentData,
+            city: data.location.name,
+            sunrise: data.current.astro.sunrise,
+            sunset: data.current.astro.sunset,
+            lat: data.location.lat,
+            long: data.location.lon,
+            uvindex: data.current.uv_index,
+          });
+        }
+      });
+  },[weather])
+
     return (
       <Background>
         <View
@@ -46,20 +52,24 @@ const Home=({navigation})=>{
             height: 'auto',
             justifyContent: 'center',
             alignItems: 'center',
-            paddingTop: 50,
+            paddingTop: 20,
           }}
         >
-          {weather.icon ? (
-            <Image
-              source={{ uri: weather.icon }}
-              style={{ width: 130, height: 120 }}
-            />
-          ) : (
-            <Image
-              source={require('../img/Weather.png')}
-              style={{ width: 130, height: 120 }}
-            />
-          )}
+          {
+            (weather.code === 113)? Sunny:null
+          }
+          {
+            (weather.code === 122 || weather.code === 116 )? Overcast:null
+          }
+          {
+            (weather.code===119)? Cloudy:null
+          }
+          {
+            (weather.code=== 176 || weather.code===179 || weather.code===293 || weather.code === 305 || weather.code === 308)? Thunderstorm:null
+          }
+          {
+            (weather.code=== 263 || weather.code===266 || weather.code === 296 || weather.code === 299 || weather.code === 302)? Rainy:null
+          }
 
           <View style={{ flexDirection: 'row' }}>
             <Text style={{ color: '#fff', fontSize: 30, fontWeight: 700 }}>

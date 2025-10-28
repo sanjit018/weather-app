@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import Background from "../component/Background";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { MinTemp, tempData } from "./Home";
@@ -9,6 +9,24 @@ import Quality from "../component/Quality"
 import Card from "../component/Card"
 import { WeatherContext } from "./WeatherContext";
 const Details=()=>{
+  const [Foercast,setFoercast]=useState({
+    time:[],
+    temperature:[],
+    precipitation:[]
+  })
+
+  const CombineData=Foercast.time.map((date,int)=>{
+    const DayName=new Date(date).toLocaleString('en-US',{'weekday':"short"})
+    const RoundTemp = Math.round(Foercast.temperature[int])
+    const RoundRain = Math.round(Foercast.precipitation[int])
+    return{
+      id:int.toString(),
+      day:DayName,
+      temp:RoundTemp,
+      rain:RoundRain
+    }
+  })
+  console.log(CombineData)
     const {weather} = useContext(WeatherContext)
     const [index,setIndex]=useState(0)
     const flatListRef=useRef(null)
@@ -26,9 +44,23 @@ const Details=()=>{
             setIndex(index-1)
         }
     }
+    useEffect(() => {
+      const fore = fetch(
+        `https://my.meteoblue.com/packages/basic-day?apikey=zwonqSu3HXtFv0WJ&lat=${weather.lat}&lon=${weather.long}&asl=8&format=json&tz=GMT`,
+      ).then(response => response.json())
+        .then(data => {
+          if (data && data.data_day) {
+            setFoercast({
+              time: data.data_day.time,
+              temperature: data.data_day.temperature_max,
+              precipitation: data.data_day.precipitation_probability,
+            });
+          }
+        }).catch((res)=>console.log(res))
+    }, [weather.lat,weather.long]);
     return (
       <Background>
-        <View style={{ paddingVertical: 40, width: '100%', height: 'auto' }}>
+        <View style={{ paddingVertical: 25, width: '100%', height: 'auto' }}>
           <Text style={styles.text}>{weather.city}</Text>
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
             <MinTemp min={weather.temperature} max={weather.max} />
@@ -65,9 +97,9 @@ const Details=()=>{
               ref={flatListRef}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              data={tempData}
+              data={CombineData}
               renderItem={({ item }) => (
-                <Forecast temp={item.temp} day={item.day} key={item.id} />
+                <Forecast temp={item.temp} day={item.day} rain={item.rain} />
               )}
               keyExtractor={(item)=>item.id}
             ></FlatList>
@@ -82,7 +114,7 @@ const Details=()=>{
           <Quality />
           <View style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'center',width:'100%'}}>
             <Card heading={"SUNRISE"} text={weather.sunrise} optional={`Sunset: ${weather.sunset}`}/>
-            <Card heading={"UV INDEX"} text={"4 Moderate"} optional={""}/>
+            <Card heading={"UV INDEX"} text={weather.uvindex} optional={""}/>
           </View>
         </View>
       </Background>
@@ -91,6 +123,6 @@ const Details=()=>{
 
 
 const styles=StyleSheet.create({
-    text:{textAlign:'center',color:'#fff',fontSize:17,fontWeight:500},
+    text:{textAlign:'center',color:'#fff',fontSize:27,fontWeight:500},
 })
 export default Details;

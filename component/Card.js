@@ -25,8 +25,8 @@ const Card = ({heading,text,optional=null}) => {
             <FontAwesomeIcon icon={faSun} size={25} style={{color:'#fff'}} />
             <Text style={{color:'#fff',fontSize:16,marginLeft:10,fontWeight:600}}>{heading}</Text>
         </View>
-        <Text style={{fontSize:26,paddingVertical:10,color:'#fff'}}>{text}</Text>
-        <Text style={{color:'#fff',fontSize:16}}>{optional}</Text>
+        <Text style={{fontSize:24,paddingVertical:10,color:'#fff'}}>{text}</Text>
+        <Text style={{color:'#fff',fontSize:14}}>{optional}</Text>
     </LinearGradient>
   );
 };
